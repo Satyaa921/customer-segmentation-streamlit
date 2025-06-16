@@ -44,7 +44,6 @@ labels = {
     0: "Premium Frequent Shoppers",
     1: "Loyal High-Spending Customers",
     2: "Budget Buyers",
-    3: "Moderate Shoppers"
-}
+    3: "Moderate Shoppers"}
 
     st.success(f"The customer belongs to: {labels.get(segment, f'Segment {segment}')}")
