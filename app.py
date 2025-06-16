@@ -40,11 +40,12 @@ if st.button("Predict Segment"):
     segment = gmm.predict(reduced)[0]
 
     # Correct segment interpretations based on real data
-    labels = {
-    0: "Moderate Shoppers",
-    1: "Premium Frequent Shoppers",
-    2: "Loyal High-Spending Customers",
-    3: "Budget Buyers (Low Income & Spend)"
+  labels = {
+    0: "Premium Frequent Shoppers",
+    1: "Loyal High-Spending Customers",
+    2: "Budget Buyers",
+    3: "Moderate Shoppers"
 }
+
 
     st.success(f"The customer belongs to: {labels.get(segment, f'Segment {segment}')}")
