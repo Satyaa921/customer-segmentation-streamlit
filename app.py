@@ -3,19 +3,19 @@ import numpy as np
 import pandas as pd
 import joblib
 
-# Load saved artifacts
+# Load saved models and column structure
 model = joblib.load("gmm_model.pkl")
 scaler = joblib.load("scaler.pkl")
 pca = joblib.load("pca.pkl")
 columns = joblib.load("columns.pkl")
 
-st.title("Customer Segmentation (GMM)")
+st.set_page_config(page_title="Customer Segmentation (GMM)", layout="centered")
+st.title("Customer Segmentation")
+st.markdown("Enter customer details to predict their segment using the GMM model.")
 
-st.markdown("Enter customer details to predict their segment.")
-
-# Example fields (adjust as per your features)
-Age = st.number_input("Age", min_value=18, max_value=100, value=30)
-Income = st.number_input("Income", min_value=0, max_value=200000, value=50000)
+# Collect input features from user
+Age = st.number_input("Age", min_value=18, max_value=100, value=35)
+Income = st.number_input("Income", min_value=0, max_value=200000, value=60000)
 Kidhome = st.selectbox("Number of Kids at Home", [0, 1, 2])
 Teenhome = st.selectbox("Number of Teenagers at Home", [0, 1, 2])
 Recency = st.slider("Days Since Last Purchase", 0, 100, 20)
@@ -28,7 +28,7 @@ MntGoldProds = st.number_input("Amount Spent on Gold", 0, 1000, 20)
 NumDealsPurchases = st.slider("Number of Deals Purchased", 0, 20, 2)
 Married = st.selectbox("Married?", ["Yes", "No"]) == "Yes"
 
-# Construct input
+# Build input dict
 input_dict = {
     'Age': Age,
     'Income': Income,
@@ -45,48 +45,37 @@ input_dict = {
     'Marital_Status_Married': int(Married),
 }
 
-# Add missing dummy variables as 0
+# Add missing one-hot/dummy columns as 0
 for col in columns:
     if col not in input_dict:
         input_dict[col] = 0
 
-# Build DataFrame
+# Convert to DataFrame
 input_df = pd.DataFrame([input_dict])[columns]
 
-# Predict
+# Predict segment
 if st.button("Predict Segment"):
     try:
-    # Step 1: Scale
-    scaled = scaler.transform(input_df)
+        # Step 1: Scale input
+        scaled = scaler.transform(input_df)
 
-    # Step 2: Reduce with PCA
-    reduced = pca.transform(scaled)
+        # Step 2: Apply PCA
+        reduced = pca.transform(scaled)
 
-    # Step 3: Check shape
-    if reduced.shape[1] != model.means_.shape[1]:
-        st.error("Mismatch in PCA components and model input size.")
-    else:
-        segment = model.predict(reduced)[0]
+        # Step 3: Predict with GMM
+        if reduced.shape[1] != model.means_.shape[1]:
+            st.error("Mismatch in PCA components and model input size.")
+        else:
+            segment = model.predict(reduced)[0]
 
-        # Optional: label mapping
-        segment_labels = {
-            0: "Low-value customer",
-            1: "High-value customer",
-            2: "Mainstream customer",
-            3: "Inactive customer"
-        }
-        label = segment_labels.get(segment, "Unknown Segment")
-        st.success(f"🧾 Predicted Customer Segment: {segment} – {label}")
-except Exception as e:
-    st.error(f"Error: {str(e)}")
-
-    segment_labels = {
-        0: "Low-value customer",
-        1: "High-value customer",
-        2: "Mainstream customer",
-        3: "Inactive customer"
-        # ← Adjust these based on your analysis
-    }
-    label = segment_labels.get(segment, "Unknown Segment")
-
-    st.success(f"🧾 Predicted Customer Segment: {segment} – {label}")
+            # Map segment to label (edit based on analysis)
+            segment_labels = {
+                0: "Low-value customer",
+                1: "High-value customer",
+                2: "Mainstream customer",
+                3: "Inactive customer"
+            }
+            label = segment_labels.get(segment, "Unknown Segment")
+            st.success(f"🧾 Predicted Customer Segment: {segment} – {label}")
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
