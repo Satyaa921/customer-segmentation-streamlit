@@ -62,3 +62,19 @@ if st.button("Predict Segment"):
     segment = model.predict(reduced)[0]
 
     st.success(f"Predicted Customer Segment: **{segment}**")
+
+segment_labels = {
+    0: "Low-value customer",
+    1: "High-value customer",
+    2: "Mainstream customer",
+    3: "Inactive customer"
+}
+
+if st.button("Predict Segment"):
+    scaled = scaler.transform(input_df)
+    reduced = pca.transform(scaled)
+    segment = model.predict(reduced)[0]
+    
+    label = segment_labels.get(segment, "Unknown Segment")
+    st.success(f"🧾 Predicted Customer Segment: {segment} – {label}")
+
