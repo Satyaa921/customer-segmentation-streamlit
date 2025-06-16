@@ -9,7 +9,7 @@ scaler = joblib.load("scaler.pkl")
 pca = joblib.load("pca.pkl")
 columns = joblib.load("columns.pkl")
 
-st.title("🧠 Customer Segmentation App")
+st.title("Customer Segmentation App")
 st.markdown("Upload customer data (CSV) to classify them into segments.")
 
 uploaded_file = st.file_uploader("Upload CSV", type="csv")
