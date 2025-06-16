@@ -1,34 +1,40 @@
-
 import streamlit as st
+import pandas as pd
 import numpy as np
 import joblib
 
-# Load model, scaler, and feature names
-gmm = joblib.load("gmm_model.pkl")
+# Load artifacts
+model = joblib.load("kmeans_model.pkl")
 scaler = joblib.load("scaler.pkl")
-feature_names = joblib.load("features.pkl")
+pca = joblib.load("pca.pkl")
+columns = joblib.load("columns.pkl")
 
-st.set_page_config(page_title="Customer Segmentation with GMM", layout="centered")
+st.title("🧠 Customer Segmentation App")
+st.markdown("Upload customer data (CSV) to classify them into segments.")
 
-st.title("🧠 Customer Segmentation App (GMM Clustering)")
-st.write("This app predicts the customer segment using Gaussian Mixture Model (GMM) clustering.")
+uploaded_file = st.file_uploader("Upload CSV", type="csv")
 
-# Input form for user data
-with st.form("customer_input_form"):
-    inputs = []
-    for feature in feature_names:
-        value = st.number_input(f"Enter {feature}:", format="%.2f")
-        inputs.append(value)
+if uploaded_file:
+    user_df = pd.read_csv(uploaded_file)
+    st.subheader("Uploaded Data")
+    st.dataframe(user_df.head())
 
-    submitted = st.form_submit_button("Predict Segment")
+    # Preprocessing
+    df = pd.get_dummies(user_df, drop_first=True)
+    for col in columns:
+        if col not in df.columns:
+            df[col] = 0  # Fill missing columns
+    df = df[columns]  # Reorder to match training
 
-if submitted:
-    # Convert inputs to array, scale, and predict
-    input_array = np.array(inputs).reshape(1, -1)
-    input_scaled = scaler.transform(input_array)
-    prediction = gmm.predict(input_scaled)[0]
+    # Scaling and PCA
+    scaled = scaler.transform(df)
+    reduced = pca.transform(scaled)
 
-    st.success(f"🔍 Predicted Customer Segment: **Cluster {prediction}**")
+    # Prediction
+    clusters = model.predict(reduced)
+    user_df["Segment"] = clusters
 
-    # Optional: Cluster info
-    st.info("Note: This segmentation is unsupervised. The clusters do not have predefined labels.")
+    st.subheader("🧾 Segmentation Results")
+    st.dataframe(user_df[["Segment"]])
+
+    st.success("✅ Segmentation complete!")
