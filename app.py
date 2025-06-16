@@ -41,10 +41,10 @@ if st.button("Predict Segment"):
 
     # Correct segment interpretations based on real data
     labels = {
-        0: "Moderate Older Shoppers",
-        1: "Premium Frequent Shoppers",
-        2: "Loyal High-Spending Customers",
-        3: "Budget Buyers (Low Income & Spend)"
-    }
+    0: "Moderate Shoppers",
+    1: "Premium Frequent Shoppers",
+    2: "Loyal High-Spending Customers",
+    3: "Budget Buyers (Low Income & Spend)"
+}
 
     st.success(f"The customer belongs to: {labels.get(segment, f'Segment {segment}')}")
