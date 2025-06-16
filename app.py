@@ -55,9 +55,30 @@ input_df = pd.DataFrame([input_dict])[columns]
 
 # Predict
 if st.button("Predict Segment"):
+    try:
+    # Step 1: Scale
     scaled = scaler.transform(input_df)
+
+    # Step 2: Reduce with PCA
     reduced = pca.transform(scaled)
-    segment = model.predict(reduced)[0]
+
+    # Step 3: Check shape
+    if reduced.shape[1] != model.means_.shape[1]:
+        st.error("Mismatch in PCA components and model input size.")
+    else:
+        segment = model.predict(reduced)[0]
+
+        # Optional: label mapping
+        segment_labels = {
+            0: "Low-value customer",
+            1: "High-value customer",
+            2: "Mainstream customer",
+            3: "Inactive customer"
+        }
+        label = segment_labels.get(segment, "Unknown Segment")
+        st.success(f"🧾 Predicted Customer Segment: {segment} – {label}")
+except Exception as e:
+    st.error(f"Error: {str(e)}")
 
     segment_labels = {
         0: "Low-value customer",
