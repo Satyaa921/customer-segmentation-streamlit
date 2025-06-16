@@ -39,13 +39,11 @@ if st.button("Predict Segment"):
     reduced = pca.transform(scaled)
     segment = gmm.predict(reduced)[0]
 
-    # Correct segment interpretations based on real data
     labels = {
-        0: "Budget Buyers",
+        0: "Moderate Shoppers",
         1: "Premium Shoppers",
-        2: "Moderate Shoppers",
+        2: "Budget Buyers",
         3: "Loyal High-Spending Customers"
     }
 
     st.success(f"The customer belongs to: {labels.get(segment, f'Segment {segment}')}")
-
