@@ -34,7 +34,7 @@ if uploaded_file:
     clusters = model.predict(reduced)
     user_df["Segment"] = clusters
 
-    st.subheader("🧾 Segmentation Results")
+    st.subheader("Segmentation Results")
     st.dataframe(user_df[["Segment"]])
 
-    st.success("✅ Segmentation complete!")
+    st.success(" Segmentation complete!")
