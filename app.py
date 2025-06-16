@@ -34,17 +34,18 @@ if st.button("Predict Segment"):
     # Create ordered input vector
     input_vector = np.array([[inputs[col] for col in columns]])
 
-    # Preprocess: scale -> PCA -> predict
+    # Preprocess: scale → PCA → predict
     scaled = scaler.transform(input_vector)
     reduced = pca.transform(scaled)
     segment = gmm.predict(reduced)[0]
 
     # Correct segment interpretations based on real data
-labels = {
-    0: "Premium Frequent Shoppers",
-    1: "Loyal High-Spending Customers",
-    2: "Budget Buyers",
-    3: "Moderate Shoppers"
-}
+    labels = {
+        0: "Budget Buyers",
+        1: "Premium Shoppers",
+        2: "Moderate Shoppers",
+        3: "Loyal High-Spending Customers"
+    }
 
     st.success(f"The customer belongs to: {labels.get(segment, f'Segment {segment}')}")
+
