@@ -28,30 +28,33 @@ MntGoldProds = st.number_input("Amount Spent on Gold", 0, 1000, 20)
 NumDealsPurchases = st.slider("Number of Deals Purchased", 0, 20, 2)
 Married = st.selectbox("Married?", ["Yes", "No"]) == "Yes"
 
-# Build input dict
-input_dict = {
-    'Age': Age,
-    'Income': Income,
-    'Kidhome': Kidhome,
-    'Teenhome': Teenhome,
-    'Recency': Recency,
-    'MntWines': MntWines,
-    'MntFruits': MntFruits,
-    'MntMeatProducts': MntMeatProducts,
-    'MntFishProducts': MntFishProducts,
-    'MntSweetProducts': MntSweetProducts,
-    'MntGoldProds': MntGoldProds,
-    'NumDealsPurchases': NumDealsPurchases,
-    'Marital_Status_Married': int(Married),
+# Collect raw input
+raw_input = {
+    "Age": age,
+    "Income": income,
+    "Kidhome": kidhome,
+    "Teenhome": teenhome,
+    "Recency": recency,
+    "MntWines": mnt_wines,
+    "MntFruits": mnt_fruits,
+    "MntMeatProducts": mnt_meat,
+    "MntFishProducts": mnt_fish,
+    "MntSweetProducts": mnt_sweets,
+    "MntGoldProds": mnt_gold,
+    "NumDealsPurchases": deals,
+    "Marital_Status_Married": 1 if married == "Yes" else 0
 }
 
-# Add missing one-hot/dummy columns as 0
-for col in columns:
-    if col not in input_dict:
-        input_dict[col] = 0
-
 # Convert to DataFrame
-input_df = pd.DataFrame([input_dict])[columns]
+input_df = pd.DataFrame([raw_input])
+
+# Ensure all expected columns are present
+for col in columns:
+    if col not in input_df.columns:
+        input_df[col] = 0  # Add missing columns with default 0
+
+# Reorder columns to match training
+input_df = input_df[columns]
 
 # Predict segment
 if st.button("Predict Segment"):
